@@ -11,12 +11,18 @@
 # 3. 進入 virtual environment
 $ make
 
+# 執行 jupyter notebook (可使用 pyspark)
+$ make notebook
+
 # 執行 pyspark
 $ make shell
 
 # 執行程式 example.py (檔案名稱可改，不指定會執行 main.py)
 $ make submit FILE=example.py
 
-# 刪除所有由程式建立的檔案、container
+# 刪除 container
+$ make down
+
+# 刪除所有由程式建立的檔案、container、image
 $ make clean
 ```
