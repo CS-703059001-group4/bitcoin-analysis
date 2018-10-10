@@ -13,7 +13,7 @@ RUN apt-get update \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
 RUN pip install --upgrade pip
-RUN pip install ipython
+RUN pip install ipython jupyter
 
 ENV HADOOP_VERSION 3.0.1
 ENV HADOOP_HOME /usr/hadoop-$HADOOP_VERSION
