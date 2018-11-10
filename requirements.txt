@@ -1,4 +1,8 @@
 findspark
-pyspark
+pyspark>=2.4
 jupyter
 plotly
+seaborn
+numpy
+pandas
+matplotlib
