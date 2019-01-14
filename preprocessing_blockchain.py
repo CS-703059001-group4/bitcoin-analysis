@@ -24,7 +24,7 @@ if __name__ == '__main__':
 	sqlContext = SQLContext(spark)
 	logger('Reading blockchain data...')
 	#Load CSV
-	CSV = 'gs://spark_bucket_1/bitcoin_dataset/btc_demo.csv'
+	CSV = 'gs://spark_bucket_1/bitcoin_dataset/btc_demo2.csv'
 	dataset = spark.read.load(CSV, format='csv', header=False).rdd.cache()
 	dataframeset = spark.createDataFrame(dataset)
 
@@ -88,19 +88,46 @@ if __name__ == '__main__':
 	#It seems that only spark dataframe can be put into graphframe
 	logger('Thats create v/e')
 	v = spark.createDataFrame(df4)#change back to spark df
-	df3.drop(range(0,1900000),inplace=True)#only try a few data , not all
+	#df3.drop(range(0,700000),inplace=True)#only try a few data , not all
 	e = spark.createDataFrame(df3)
 	logger('Thats create g')
 	g = GraphFrame(v, e)
 
 	#ConnectedComponent
-	con = g.connectedComponents().toPandas()
-	con = con.groupby('component').apply(len).rename("Frequency").to_frame()
+	con1 = g.connectedComponents().toPandas()
+	con = con1.groupby('component').apply(len).rename("Frequency").to_frame()
 	con = con.sort_values(by=['Frequency'],ascending=False)
 	con.reset_index(inplace=True)
-	con = spark.createDataFrame(con)
-	con = con.filter(con.component<10)
-	con.show()
+	print(con)
+	#print(con.Frequency.max())
+	#print(con1)
+	con = con[con['Frequency']==con.Frequency.max()]
+	con1 = con1[con1['component']==con['component'][0]]
+	con1.pop('component')
+	#print(con1)
+	pd.merge(df3,con1,left_on='src',right_on='id',how='inner')
+	#df3 = df3[df3['src']==con1['id']]
+	df3.reset_index(drop=True,inplace=True)
+	print(df3)
+	
+
+	v = spark.createDataFrame(con1)
+	e = spark.createDataFrame(df3)
+	g = GraphFrame(v, e)
+
+	g.connectedComponents().show()
+	pr = g.pageRank(resetProbability=0.15, maxIter = 5)
+	pr.vertices.orderBy(pr.vertices.pagerank.desc()).show()
+	
+
+	#g.degrees.orderBy(g.degrees.degree.desc()).show()
+
+	#print(vp)
+	#con = spark.createDataFrame(con)
+	
+	
+	#con = con.filter(con.component<con.component.max())
+	
 	#g.vertices = g.connectedComponents()  #seems its wrong because they are diffrent type
 	#g.vertices.drop(indexof('component' in con . frequency < 10))  #the issue is how to drop address that not in big component(frequency<10)
 	
