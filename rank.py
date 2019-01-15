@@ -23,7 +23,7 @@ def main():
     edges = load_data(bq_edges_table)
     graph = GraphFrame(vertices, edges)
     print('Find the largest connected subgraph')
-    subgraph = findTheLargestSubgraph(graph)
+    subgraph = find_the_largest_subgraph(graph)
     print('Caculate pagerank')
     results = subgraph.pageRank(resetProbability=0.15, maxIter=10)
     results.vertices\
@@ -54,7 +54,7 @@ def load_data(table):
     return spark.read.json(table_json)
 
 
-def findTheLargestSubgraph(graph):
+def find_the_largest_subgraph(graph):
     result = graph.stronglyConnectedComponents(maxIter=10)
     largestComponent = result.orderBy('component').first()['component']
     vertices = result\
