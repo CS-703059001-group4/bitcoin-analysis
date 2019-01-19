@@ -2,7 +2,7 @@ select DISTINCT id from
 (select
   txout.output_pubkey_base58 as id
 from
-  `bigquery-public-data.bitcoin_blockchain.transactions` as txs,
+  `[txs_view]` as txs,
   unnest(txs.outputs) as txout
 where txout.output_pubkey_base58 is not null
 union all

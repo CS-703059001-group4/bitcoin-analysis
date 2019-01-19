@@ -2,7 +2,7 @@ select
   txin.input_pubkey_base58 as src,
   txout.output_pubkey_base58 as dst
 from
-  `bigquery-public-data.bitcoin_blockchain.transactions` as txs,
+  `[txs_view]` as txs,
   unnest(txs.outputs) as txout,
   unnest(txs.inputs) as txin
 where
