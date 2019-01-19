@@ -1,9 +1,8 @@
 from datetime import datetime
 from pyspark.sql import SQLContext
-from pyspark.sql.functions import desc
-from pyspark.sql.functions import col
 from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
+from pyspark.sql.functions import desc, col, countDistinct
 
 sc = SparkContext()
 spark = SparkSession(sc)
@@ -29,8 +28,7 @@ def main():
     results.vertices\
         .select('id', 'pagerank')\
         .orderBy(desc('pagerank'))\
-        .limit(10)\
-        .show()
+        .show(20, False)
     spark.stop()
 
 
@@ -55,8 +53,10 @@ def load_data(table):
 
 
 def find_the_largest_subgraph(graph):
-    result = graph.stronglyConnectedComponents(maxIter=10)
-    largestComponent = result.orderBy('component').first()['component']
+    result = graph.connectedComponents()
+    componentCount = result.groupBy('component').count().orderBy(desc('count'))
+    componentCount.show()
+    largestComponent = componentCount.first()['component']
     vertices = result\
         .filter(result.component == largestComponent)\
         .select('id')
